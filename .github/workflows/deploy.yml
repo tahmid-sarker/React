@@ -1,0 +1,35 @@
+name: Deploy Projects to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - Background-Changer
+          - Password-Generator
+          - Startup-Inc
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+
+      - name: Install dependencies and build
+        run: |
+          cd ${{ matrix.project }}
+          npm install
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ matrix.project }}/dist
+          cname: tahmid-sarker.github.io
